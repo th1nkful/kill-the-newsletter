@@ -16,15 +16,10 @@ export const feedURL = (identifier: string): string => `${BASE_URL}/feeds/${iden
 
 export const feedEmail = (identifier: string): string => `${identifier}@${EMAIL_DOMAIN}`;
 
-export const alternatePath = (
-  feedIdentifier: string,
-  entryIdentifier: string,
-): string => `/alternate/${feedIdentifier}/${entryIdentifier}.html`;
-
 export const alternateURL = (
   feedIdentifier: string,
   entryIdentifier: string,
-): string => `${BASE_URL}${alternatePath(feedIdentifier, entryIdentifier)}`;
+): string => `${BASE_URL}/alternate/${feedIdentifier}/${entryIdentifier}`;
 
 export const urn = (identifier: string): string => `urn:kill-the-newsletter:${identifier}`;
 

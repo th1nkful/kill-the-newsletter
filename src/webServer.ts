@@ -70,8 +70,7 @@ app.post('/', async (req, res, next) => {
   }
 });
 
-app.get(
-  utils.alternatePath(':feedIdentifier', ':entryIdentifier'),
+app.get('/alternate/:feedIdentifier/:entryIdentifier',
   async (req, res, next) => {
     try {
       const { feedIdentifier, entryIdentifier } = req.params;
@@ -105,7 +104,6 @@ app.get(
       console.error(error);
       next(error);
     }
-  },
-);
+  });
 
 export default app;
