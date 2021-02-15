@@ -48,7 +48,7 @@ export const webServer = express()
             createIdentifier(),
             `“${utils.X(name)}” Inbox Created`,
             'Kill the Newsletter!',
-            utils.X(renderedCreated)
+            utils.X(renderedCreated),
           ),
         ),
       );
@@ -75,15 +75,15 @@ export const webServer = express()
         } catch {
           return res.sendStatus(404);
         }
-        const feed = new JSDOM(text, { contentType: 'text/xml' });
-        const document = feed.window.document;
+        const rssFeed = new JSDOM(text, { contentType: 'text/xml' });
+        const { document } = rssFeed.window;
         const link = document.querySelector(
-          `link[href="${utils.alternateURL(feedIdentifier, entryIdentifier)}"]`
+          `link[href="${utils.alternateURL(feedIdentifier, entryIdentifier)}"]`,
         );
         if (link === null) return res.sendStatus(404);
         res.send(
           entities.decodeXML(
-            link.parentElement!.querySelector('content')!.textContent!
+            link.parentElement!.querySelector('content')!.textContent!,
           ),
         );
       } catch (error) {
@@ -99,8 +99,7 @@ export const emailServer = new SMTPServer({
   async onData(stream, session, callback) {
     try {
       const email = await mailparser.simpleParser(stream);
-      const content =
-        typeof email.html === 'string' ? email.html : email.textAsHtml ?? '';
+      const content = typeof email.html === 'string' ? email.html : email.textAsHtml ?? '';
       for (const address of new Set(
         session.envelope.rcptTo.map(({ address }) => address)
       )) {
