@@ -3,11 +3,10 @@ import axios from "axios";
 import qs from "qs";
 import { JSDOM } from "jsdom";
 
-import { webServer, emailServer } from "./src";
-import config from './src/config';
+import { webServer, emailServer } from "../src";
+import config from '../src/config';
 
 const {
-  // webPort: WEB_PORT,
   emailPort: EMAIL_PORT,
   baseUrl: BASE_URL,
   emailDomain: EMAIL_DOMAIN,
