@@ -10,8 +10,12 @@ import writeFileAtomic from 'write-file-atomic';
 import html from 'tagged-template-noop';
 
 import createIdentifier from './src/lib/createIdentifier';
-import layout from './src/lib/layout';
+import layout from './src/lib/templates/layout';
 import config from './src/config';
+import newInbox from './src/lib/templates/nexInbox';
+import created from './src/lib/templates/created';
+
+import * as utils from './src/lib/utils';
 
 const {
   webPort: WEB_PORT,
@@ -34,24 +38,24 @@ export const webServer = express()
       const identifier = createIdentifier();
       const renderedCreated = created(identifier);
       await writeFileAtomic(
-        feedFilePath(identifier),
+        utils.feedFilePath(identifier),
         feed(
           identifier,
-          X(name),
+          utils.X(name),
           entry(
             identifier,
             createIdentifier(),
-            `“${X(name)}” Inbox Created`,
+            `“${utils.X(name)}” Inbox Created`,
             'Kill the Newsletter!',
-            X(renderedCreated)
-          )
-        )
+            utils.X(renderedCreated)
+          ),
+        ),
       );
       res.send(
         layout(html`
-          <p><strong>“${H(name)}” Inbox Created</strong></p>
+          <p><strong>“${utils.H(name)}” Inbox Created</strong></p>
           ${renderedCreated}
-        `)
+        `),
       );
     } catch (error) {
       console.error(error);
@@ -59,11 +63,11 @@ export const webServer = express()
     }
   })
   .get(
-    alternatePath(':feedIdentifier', ':entryIdentifier'),
+    utils.alternatePath(':feedIdentifier', ':entryIdentifier'),
     async (req, res, next) => {
       try {
         const { feedIdentifier, entryIdentifier } = req.params;
-        const path = feedFilePath(feedIdentifier);
+        const path = utils.feedFilePath(feedIdentifier);
         let text;
         try {
           text = await fs.readFile(path, 'utf8');
@@ -73,13 +77,13 @@ export const webServer = express()
         const feed = new JSDOM(text, { contentType: 'text/xml' });
         const document = feed.window.document;
         const link = document.querySelector(
-          `link[href="${alternateURL(feedIdentifier, entryIdentifier)}"]`
+          `link[href="${utils.alternateURL(feedIdentifier, entryIdentifier)}"]`
         );
         if (link === null) return res.sendStatus(404);
         res.send(
           entities.decodeXML(
             link.parentElement!.querySelector('content')!.textContent!
-          )
+          ),
         );
       } catch (error) {
         console.error(error);
@@ -104,7 +108,7 @@ export const emailServer = new SMTPServer({
         );
         if (match?.groups === undefined) continue;
         const identifier = match.groups.identifier.toLowerCase();
-        const path = feedFilePath(identifier);
+        const path = utils.feedFilePath(identifier);
         let text;
         try {
           text = await fs.readFile(path, 'utf8');
@@ -118,13 +122,13 @@ export const emailServer = new SMTPServer({
           console.error(`Field ‘updated’ not found: ‘${path}’`);
           continue;
         }
-        updated.textContent = now();
+        updated.textContent = utils.now();
         const renderedEntry = entry(
           identifier,
           createIdentifier(),
-          X(email.subject ?? ''),
-          X(email.from?.text ?? ''),
-          X(content)
+          utils.X(email.subject ?? ''),
+          utils.X(email.from?.text ?? ''),
+          utils.X(content),
         );
         const firstEntry = document.querySelector('feed > entry:first-of-type');
         if (firstEntry === null)
@@ -154,48 +158,6 @@ export const emailServer = new SMTPServer({
   },
 }).listen(EMAIL_PORT);
 
-function newInbox(): string {
-  return html`
-    <form method="POST" action="${BASE_URL}/">
-      <p>
-        <input
-          type="text"
-          name="name"
-          placeholder="Newsletter Name…"
-          maxlength="500"
-          size="30"
-          required
-        />
-        <button>Create Inbox</button>
-      </p>
-    </form>
-  `;
-}
-
-function created(identifier: string): string {
-  return html`
-    <p>
-      Sign up for the newsletter with<br /><code class="copyable"
-        >${feedEmail(identifier)}</code
-      >
-    </p>
-    <p>
-      Subscribe to the Atom feed at<br /><code class="copyable"
-        >${feedURL(identifier)}</code
-      >
-    </p>
-    <p>
-      Don’t share these addresses.<br />They contain an identifier that other
-      people could use<br />to send you spam and to control your newsletter
-      subscriptions.
-    </p>
-    <p>Enjoy your readings!</p>
-    <p>
-      <a href="${BASE_URL}"><strong>Create Another Inbox</strong></a>
-    </p>
-  `.trim();
-}
-
 function feed(identifier: string, name: string, initialEntry: string): string {
   return html`
     <?xml version="1.0" encoding="utf-8"?>
@@ -203,16 +165,16 @@ function feed(identifier: string, name: string, initialEntry: string): string {
       <link
         rel="self"
         type="application/atom+xml"
-        href="${feedURL(identifier)}"
+        href="${utils.feedURL(identifier)}"
       />
       <link rel="alternate" type="text/html" href="${BASE_URL}" />
-      <id>${urn(identifier)}</id>
+      <id>${utils.urn(identifier)}</id>
       <title>${name}</title>
       <subtitle
-        >Kill the Newsletter! Inbox: ${feedEmail(identifier)} →
-        ${feedURL(identifier)}</subtitle
+        >Kill the Newsletter! Inbox: ${utils.feedEmail(identifier)} →
+        ${utils.feedURL(identifier)}</subtitle
       >
-      <updated>${now()}</updated>
+      <updated>${utils.now()}</updated>
       <author><name>Kill the Newsletter!</name></author>
       ${initialEntry}
     </feed>
@@ -228,55 +190,16 @@ function entry(
 ): string {
   return html`
     <entry>
-      <id>${urn(entryIdentifier)}</id>
+      <id>${utils.urn(entryIdentifier)}</id>
       <title>${title}</title>
       <author><name>${author}</name></author>
-      <updated>${now()}</updated>
+      <updated>${utils.now()}</updated>
       <link
         rel="alternate"
         type="text/html"
-        href="${alternateURL(feedIdentifier, entryIdentifier)}"
+        href="${utils.alternateURL(feedIdentifier, entryIdentifier)}"
       />
       <content type="html">${content}</content>
     </entry>
   `.trim();
-}
-
-function now(): string {
-  return new Date().toISOString();
-}
-
-function feedFilePath(identifier: string): string {
-  return `static/feeds/${identifier}.xml`;
-}
-
-function feedURL(identifier: string): string {
-  return `${BASE_URL}/feeds/${identifier}.xml`;
-}
-
-function feedEmail(identifier: string): string {
-  return `${identifier}@${EMAIL_DOMAIN}`;
-}
-
-function alternatePath(
-  feedIdentifier: string,
-  entryIdentifier: string,
-): string {
-  return `/alternate/${feedIdentifier}/${entryIdentifier}.html`;
-}
-
-function alternateURL(feedIdentifier: string, entryIdentifier: string): string {
-  return `${BASE_URL}${alternatePath(feedIdentifier, entryIdentifier)}`;
-}
-
-function urn(identifier: string): string {
-  return `urn:kill-the-newsletter:${identifier}`;
-}
-
-function X(string: string): string {
-  return entities.encodeXML(sanitizeXMLString.sanitize(string));
-}
-
-function H(string: string): string {
-  return entities.encodeHTML(sanitizeXMLString.sanitize(string));
 }
