@@ -1,7 +1,6 @@
 import express from 'express';
 import { SMTPServer } from 'smtp-server';
 import mailparser from 'mailparser';
-import * as sanitizeXMLString from 'sanitize-xml-string';
 import * as entities from 'entities';
 import R from 'escape-string-regexp';
 import { JSDOM } from 'jsdom';
@@ -15,6 +14,8 @@ import config from './src/config';
 import newInbox from './src/lib/templates/nexInbox';
 import created from './src/lib/templates/created';
 
+import entry from './src/lib/xml/entry';
+import feed from './src/lib/xml/feed';
 import * as utils from './src/lib/utils';
 
 const {
@@ -157,49 +158,3 @@ export const emailServer = new SMTPServer({
     }
   },
 }).listen(EMAIL_PORT);
-
-function feed(identifier: string, name: string, initialEntry: string): string {
-  return html`
-    <?xml version="1.0" encoding="utf-8"?>
-    <feed xmlns="http://www.w3.org/2005/Atom">
-      <link
-        rel="self"
-        type="application/atom+xml"
-        href="${utils.feedURL(identifier)}"
-      />
-      <link rel="alternate" type="text/html" href="${BASE_URL}" />
-      <id>${utils.urn(identifier)}</id>
-      <title>${name}</title>
-      <subtitle
-        >Kill the Newsletter! Inbox: ${utils.feedEmail(identifier)} →
-        ${utils.feedURL(identifier)}</subtitle
-      >
-      <updated>${utils.now()}</updated>
-      <author><name>Kill the Newsletter!</name></author>
-      ${initialEntry}
-    </feed>
-  `.trim();
-}
-
-function entry(
-  feedIdentifier: string,
-  entryIdentifier: string,
-  title: string,
-  author: string,
-  content: string,
-): string {
-  return html`
-    <entry>
-      <id>${utils.urn(entryIdentifier)}</id>
-      <title>${title}</title>
-      <author><name>${author}</name></author>
-      <updated>${utils.now()}</updated>
-      <link
-        rel="alternate"
-        type="text/html"
-        href="${utils.alternateURL(feedIdentifier, entryIdentifier)}"
-      />
-      <content type="html">${content}</content>
-    </entry>
-  `.trim();
-}

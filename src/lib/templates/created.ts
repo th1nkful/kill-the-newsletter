@@ -1,4 +1,5 @@
 import config from '../../config';
+import { feedEmail, feedURL } from '../utils';
 
 const {
   baseUrl: BASE_URL,
