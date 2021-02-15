@@ -1,5 +1,9 @@
-const BASE_URL = process.env.BASE_URL || 'http://localhost:8000';
-const ISSUE_REPORT = process.env.ISSUE_REPORT || 'mailto:kill-the-newsletter@leafac.com';
+import config from '../config';
+
+const {
+  issueReport: ISSUE_REPORT,
+  baseUrl: BASE_URL,
+} = config;
 
 const layout = (content: string): string => {
   const html = `<!DOCTYPE html>

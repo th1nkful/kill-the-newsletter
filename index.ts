@@ -11,13 +11,14 @@ import html from 'tagged-template-noop';
 
 import createIdentifier from './src/lib/createIdentifier';
 import layout from './src/lib/layout';
+import config from './src/config';
 
-export const WEB_PORT = process.env.WEB_PORT ?? 8000;
-export const EMAIL_PORT = process.env.EMAIL_PORT ?? 2525;
-export const BASE_URL = process.env.BASE_URL ?? 'http://localhost:8000';
-export const EMAIL_DOMAIN = process.env.EMAIL_DOMAIN ?? 'localhost';
-export const ISSUE_REPORT =
-  process.env.ISSUE_REPORT ?? 'mailto:kill-the-newsletter@leafac.com';
+const {
+  webPort: WEB_PORT,
+  emailPort: EMAIL_PORT,
+  baseUrl: BASE_URL,
+  emailDomain: EMAIL_DOMAIN,
+} = config;
 
 export const webServer = express()
   .use(['/feeds', '/alternate'], (req, res, next) => {
@@ -152,8 +153,6 @@ export const emailServer = new SMTPServer({
     }
   },
 }).listen(EMAIL_PORT);
-
-
 
 function newInbox(): string {
   return html`

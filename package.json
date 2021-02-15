@@ -16,6 +16,7 @@
     "@types/write-file-atomic": "^3.0.0",
     "caddy-npm": "^2.1.1",
     "crypto-random-string": "^3.2.0",
+    "dotenv": "^8.2.0",
     "entities": "^2.0.0",
     "escape-string-regexp": "^4.0.0",
     "express": "^4.17.1",
