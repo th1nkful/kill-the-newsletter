@@ -1,0 +1,6 @@
+.eslintrc.js
+./static/**
+
+
+# For now...
+test.ts
