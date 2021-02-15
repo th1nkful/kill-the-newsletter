@@ -1,4 +1,6 @@
 import express from 'express';
+import asyncHandler from 'express-async-handler';
+
 import * as entities from 'entities';
 import { JSDOM } from 'jsdom';
 import { promises as fs } from 'fs';
@@ -34,11 +36,12 @@ app.use(express.static('static'));
 app.use(express.urlencoded({ extended: true }));
 
 // Get main page to create new feed
-app.get('/', (req, res) => res.send(layout(newInbox())));
+app.get('/',
+  (req, res) => res.send(layout(newInbox())));
 
 // Create new feeds
-app.post('/', async (req, res, next) => {
-  try {
+app.post('/',
+  asyncHandler(async (req, res) => {
     const { name } = req.body;
     const identifier = createIdentifier();
     const renderedCreated = created(identifier);
@@ -64,46 +67,37 @@ app.post('/', async (req, res, next) => {
         ${renderedCreated}
       `),
     );
-  } catch (error) {
-    console.error(error);
-    next(error);
-  }
-});
+  }));
 
 app.get('/alternate/:feedIdentifier/:entryIdentifier',
-  async (req, res, next) => {
+  asyncHandler(async (req, res) => {
+    const { feedIdentifier, entryIdentifier } = req.params;
+    const path = utils.feedFilePath(feedIdentifier);
+
+    let text;
     try {
-      const { feedIdentifier, entryIdentifier } = req.params;
-      const path = utils.feedFilePath(feedIdentifier);
-
-      let text;
-      try {
-        text = await fs.readFile(path, 'utf8');
-      } catch {
-        res.sendStatus(404);
-        return;
-      }
-
-      const rssFeed = new JSDOM(text, { contentType: 'text/xml' });
-      const { document } = rssFeed.window;
-      const link = document.querySelector(
-        `link[href="${utils.alternateURL(feedIdentifier, entryIdentifier)}"]`,
-      );
-
-      if (link === null) {
-        res.sendStatus(404);
-        return;
-      }
-
-      res.send(
-        entities.decodeXML(
-          link.parentElement!.querySelector('content')!.textContent!,
-        ),
-      );
-    } catch (error) {
-      console.error(error);
-      next(error);
+      text = await fs.readFile(path, 'utf8');
+    } catch {
+      res.sendStatus(404);
+      return;
     }
-  });
+
+    const rssFeed = new JSDOM(text, { contentType: 'text/xml' });
+    const { document } = rssFeed.window;
+    const link = document.querySelector(
+      `link[href="${utils.alternateURL(feedIdentifier, entryIdentifier)}"]`,
+    );
+
+    if (link === null) {
+      res.sendStatus(404);
+      return;
+    }
+
+    res.send(
+      entities.decodeXML(
+        link.parentElement!.querySelector('content')!.textContent!,
+      ),
+    );
+  }));
 
 export default app;
