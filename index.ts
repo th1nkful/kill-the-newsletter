@@ -1,31 +1,32 @@
-import express from "express";
-import { SMTPServer } from "smtp-server";
-import mailparser from "mailparser";
-import * as sanitizeXMLString from "sanitize-xml-string";
-import * as entities from "entities";
-import R from "escape-string-regexp";
-import { JSDOM } from "jsdom";
-import { promises as fs } from "fs";
-import writeFileAtomic from "write-file-atomic";
-import cryptoRandomString from "crypto-random-string";
-import html from "tagged-template-noop";
+import express from 'express';
+import { SMTPServer } from 'smtp-server';
+import mailparser from 'mailparser';
+import * as sanitizeXMLString from 'sanitize-xml-string';
+import * as entities from 'entities';
+import R from 'escape-string-regexp';
+import { JSDOM } from 'jsdom';
+import { promises as fs } from 'fs';
+import writeFileAtomic from 'write-file-atomic';
+
+import html from 'tagged-template-noop';
+import createIdentifier from './src/lib/createIdentifier';
 
 export const WEB_PORT = process.env.WEB_PORT ?? 8000;
 export const EMAIL_PORT = process.env.EMAIL_PORT ?? 2525;
-export const BASE_URL = process.env.BASE_URL ?? "http://localhost:8000";
-export const EMAIL_DOMAIN = process.env.EMAIL_DOMAIN ?? "localhost";
+export const BASE_URL = process.env.BASE_URL ?? 'http://localhost:8000';
+export const EMAIL_DOMAIN = process.env.EMAIL_DOMAIN ?? 'localhost';
 export const ISSUE_REPORT =
-  process.env.ISSUE_REPORT ?? "mailto:kill-the-newsletter@leafac.com";
+  process.env.ISSUE_REPORT ?? 'mailto:kill-the-newsletter@leafac.com';
 
 export const webServer = express()
-  .use(["/feeds", "/alternate"], (req, res, next) => {
-    res.header("X-Robots-Tag", "noindex");
+  .use(['/feeds', '/alternate'], (req, res, next) => {
+    res.header('X-Robots-Tag', 'noindex');
     next();
   })
-  .use(express.static("static"))
+  .use(express.static('static'))
   .use(express.urlencoded({ extended: true }))
-  .get("/", (req, res) => res.send(layout(newInbox())))
-  .post("/", async (req, res, next) => {
+  .get('/', (req, res) => res.send(layout(newInbox())))
+  .post('/', async (req, res, next) => {
     try {
       const { name } = req.body;
       const identifier = createIdentifier();
@@ -39,7 +40,7 @@ export const webServer = express()
             identifier,
             createIdentifier(),
             `“${X(name)}” Inbox Created`,
-            "Kill the Newsletter!",
+            'Kill the Newsletter!',
             X(renderedCreated)
           )
         )
@@ -56,18 +57,18 @@ export const webServer = express()
     }
   })
   .get(
-    alternatePath(":feedIdentifier", ":entryIdentifier"),
+    alternatePath(':feedIdentifier', ':entryIdentifier'),
     async (req, res, next) => {
       try {
         const { feedIdentifier, entryIdentifier } = req.params;
         const path = feedFilePath(feedIdentifier);
         let text;
         try {
-          text = await fs.readFile(path, "utf8");
+          text = await fs.readFile(path, 'utf8');
         } catch {
           return res.sendStatus(404);
         }
-        const feed = new JSDOM(text, { contentType: "text/xml" });
+        const feed = new JSDOM(text, { contentType: 'text/xml' });
         const document = feed.window.document;
         const link = document.querySelector(
           `link[href="${alternateURL(feedIdentifier, entryIdentifier)}"]`
@@ -75,7 +76,7 @@ export const webServer = express()
         if (link === null) return res.sendStatus(404);
         res.send(
           entities.decodeXML(
-            link.parentElement!.querySelector("content")!.textContent!
+            link.parentElement!.querySelector('content')!.textContent!
           )
         );
       } catch (error) {
@@ -87,12 +88,12 @@ export const webServer = express()
   .listen(WEB_PORT, () => console.log(`Server started: ${BASE_URL}`));
 
 export const emailServer = new SMTPServer({
-  disabledCommands: ["AUTH", "STARTTLS"],
+  disabledCommands: ['AUTH', 'STARTTLS'],
   async onData(stream, session, callback) {
     try {
       const email = await mailparser.simpleParser(stream);
       const content =
-        typeof email.html === "string" ? email.html : email.textAsHtml ?? "";
+        typeof email.html === 'string' ? email.html : email.textAsHtml ?? '';
       for (const address of new Set(
         session.envelope.rcptTo.map(({ address }) => address)
       )) {
@@ -104,13 +105,13 @@ export const emailServer = new SMTPServer({
         const path = feedFilePath(identifier);
         let text;
         try {
-          text = await fs.readFile(path, "utf8");
+          text = await fs.readFile(path, 'utf8');
         } catch {
           continue;
         }
-        const feed = new JSDOM(text, { contentType: "text/xml" });
+        const feed = new JSDOM(text, { contentType: 'text/xml' });
         const document = feed.window.document;
-        const updated = document.querySelector("feed > updated");
+        const updated = document.querySelector('feed > updated');
         if (updated === null) {
           console.error(`Field ‘updated’ not found: ‘${path}’`);
           continue;
@@ -119,18 +120,18 @@ export const emailServer = new SMTPServer({
         const renderedEntry = entry(
           identifier,
           createIdentifier(),
-          X(email.subject ?? ""),
-          X(email.from?.text ?? ""),
+          X(email.subject ?? ''),
+          X(email.from?.text ?? ''),
           X(content)
         );
-        const firstEntry = document.querySelector("feed > entry:first-of-type");
+        const firstEntry = document.querySelector('feed > entry:first-of-type');
         if (firstEntry === null)
           document
-            .querySelector("feed")!
-            .insertAdjacentHTML("beforeend", renderedEntry);
-        else firstEntry.insertAdjacentHTML("beforebegin", renderedEntry);
+            .querySelector('feed')!
+            .insertAdjacentHTML('beforeend', renderedEntry);
+        else firstEntry.insertAdjacentHTML('beforebegin', renderedEntry);
         while (feed.serialize().length > 500_000) {
-          const lastEntry = document.querySelector("feed > entry:last-of-type");
+          const lastEntry = document.querySelector('feed > entry:last-of-type');
           if (lastEntry === null) break;
           lastEntry.remove();
         }
@@ -146,7 +147,7 @@ export const emailServer = new SMTPServer({
       );
       console.error(error);
       stream.resume();
-      callback(new Error("Failed to receive message. Please try again."));
+      callback(new Error('Failed to receive message. Please try again.'));
     }
   },
 }).listen(EMAIL_PORT);
@@ -277,7 +278,7 @@ function entry(
   entryIdentifier: string,
   title: string,
   author: string,
-  content: string
+  content: string,
 ): string {
   return html`
     <entry>
@@ -293,13 +294,6 @@ function entry(
       <content type="html">${content}</content>
     </entry>
   `.trim();
-}
-
-function createIdentifier(): string {
-  return cryptoRandomString({
-    length: 16,
-    characters: "1234567890qwertyuiopasdfghjklzxcvbnm",
-  });
 }
 
 function now(): string {
@@ -320,7 +314,7 @@ function feedEmail(identifier: string): string {
 
 function alternatePath(
   feedIdentifier: string,
-  entryIdentifier: string
+  entryIdentifier: string,
 ): string {
   return `/alternate/${feedIdentifier}/${entryIdentifier}.html`;
 }
