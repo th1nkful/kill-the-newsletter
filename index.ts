@@ -1,7 +1,5 @@
-import express from 'express';
 import { SMTPServer } from 'smtp-server';
 import mailparser from 'mailparser';
-import * as entities from 'entities';
 import R from 'escape-string-regexp';
 import { JSDOM } from 'jsdom';
 import { promises as fs } from 'fs';
@@ -9,90 +7,19 @@ import writeFileAtomic from 'write-file-atomic';
 import html from 'tagged-template-noop';
 
 import createIdentifier from './src/lib/createIdentifier';
-import layout from './src/lib/templates/layout';
 import config from './src/config';
-import newInbox from './src/lib/templates/nexInbox';
-import created from './src/lib/templates/created';
 
 import entry from './src/lib/xml/entry';
-import feed from './src/lib/xml/feed';
 import * as utils from './src/lib/utils';
+import app from './src/webServer';
 
 const {
-  webPort: WEB_PORT,
   emailPort: EMAIL_PORT,
-  baseUrl: BASE_URL,
   emailDomain: EMAIL_DOMAIN,
 } = config;
 
-export const webServer = express()
-  .use(['/feeds', '/alternate'], (req, res, next) => {
-    res.header('X-Robots-Tag', 'noindex');
-    next();
-  })
-  .use(express.static('static'))
-  .use(express.urlencoded({ extended: true }))
-  .get('/', (req, res) => res.send(layout(newInbox())))
-  .post('/', async (req, res, next) => {
-    try {
-      const { name } = req.body;
-      const identifier = createIdentifier();
-      const renderedCreated = created(identifier);
-      await writeFileAtomic(
-        utils.feedFilePath(identifier),
-        feed(
-          identifier,
-          utils.X(name),
-          entry(
-            identifier,
-            createIdentifier(),
-            `“${utils.X(name)}” Inbox Created`,
-            'Kill the Newsletter!',
-            utils.X(renderedCreated),
-          ),
-        ),
-      );
-      res.send(
-        layout(html`
-          <p><strong>“${utils.H(name)}” Inbox Created</strong></p>
-          ${renderedCreated}
-        `),
-      );
-    } catch (error) {
-      console.error(error);
-      next(error);
-    }
-  })
-  .get(
-    utils.alternatePath(':feedIdentifier', ':entryIdentifier'),
-    async (req, res, next) => {
-      try {
-        const { feedIdentifier, entryIdentifier } = req.params;
-        const path = utils.feedFilePath(feedIdentifier);
-        let text;
-        try {
-          text = await fs.readFile(path, 'utf8');
-        } catch {
-          return res.sendStatus(404);
-        }
-        const rssFeed = new JSDOM(text, { contentType: 'text/xml' });
-        const { document } = rssFeed.window;
-        const link = document.querySelector(
-          `link[href="${utils.alternateURL(feedIdentifier, entryIdentifier)}"]`,
-        );
-        if (link === null) return res.sendStatus(404);
-        res.send(
-          entities.decodeXML(
-            link.parentElement!.querySelector('content')!.textContent!,
-          ),
-        );
-      } catch (error) {
-        console.error(error);
-        next(error);
-      }
-    }
-  )
-  .listen(WEB_PORT, () => console.log(`Server started: ${BASE_URL}`));
+export const webServer = app.listen(config.webPort,
+  () => console.log(`Server started: ${config.baseUrl}`));
 
 export const emailServer = new SMTPServer({
   disabledCommands: ['AUTH', 'STARTTLS'],
