@@ -1,7 +1,7 @@
 {
   "scripts": {
-    "start": "ts-node .",
-    "develop": "nodemon --ext ts --exec 'ts-node .'",
+    "start": "ts-node ./src",
+    "develop": "nodemon --ext ts --exec 'ts-node ./src'",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "test": "jest --coverage",
     "deploy": "pm2 deploy package.json production",

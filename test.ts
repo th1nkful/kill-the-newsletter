@@ -3,7 +3,7 @@ import axios from "axios";
 import qs from "qs";
 import { JSDOM } from "jsdom";
 
-import { webServer, emailServer } from ".";
+import { webServer, emailServer } from "./src";
 import config from './src/config';
 
 const {

@@ -1,6 +1,6 @@
-import config from './src/config';
-import app from './src/webServer';
-import email from './src/emailServer';
+import config from './config';
+import app from './webServer';
+import email from './emailServer';
 
 export const webServer = app.listen(config.webPort,
   () => console.log(`Server started: ${config.baseUrl}`));
