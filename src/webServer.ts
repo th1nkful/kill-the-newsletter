@@ -42,6 +42,7 @@ app.post('/', async (req, res, next) => {
     const { name } = req.body;
     const identifier = createIdentifier();
     const renderedCreated = created(identifier);
+
     await writeFileAtomic(
       utils.feedFilePath(identifier),
       feed(
@@ -56,6 +57,7 @@ app.post('/', async (req, res, next) => {
         ),
       ),
     );
+
     res.send(
       layout(html`
         <p><strong>“${utils.H(name)}” Inbox Created</strong></p>
@@ -74,18 +76,26 @@ app.get(
     try {
       const { feedIdentifier, entryIdentifier } = req.params;
       const path = utils.feedFilePath(feedIdentifier);
+
       let text;
       try {
         text = await fs.readFile(path, 'utf8');
       } catch {
-        return res.sendStatus(404);
+        res.sendStatus(404);
+        return;
       }
+
       const rssFeed = new JSDOM(text, { contentType: 'text/xml' });
       const { document } = rssFeed.window;
       const link = document.querySelector(
         `link[href="${utils.alternateURL(feedIdentifier, entryIdentifier)}"]`,
       );
-      if (link === null) return res.sendStatus(404);
+
+      if (link === null) {
+        res.sendStatus(404);
+        return;
+      }
+
       res.send(
         entities.decodeXML(
           link.parentElement!.querySelector('content')!.textContent!,
