@@ -15,6 +15,7 @@ import newInbox from './lib/templates/nexInbox';
 import entry from './lib/xml/entry';
 import feed from './lib/xml/feed';
 import * as utils from './lib/utils';
+import createNewFeed from './lib/createNewFeed';
 
 // import config from './config';
 
@@ -51,9 +52,18 @@ app.post('/',
     const identifier = createIdentifier();
     const renderedCreated = created(identifier);
 
-    // create file with feed id with intro entry
     // ! create feed in datastore
+    // const feed = await createNewFeed(req.body);
+    // const renderedCreated = created(feed.feedId);
+
     // ! add initial entry
+    // await createNewFeedItem(feed.feedId, {
+    //   title: `“${utils.X(name)}” Inbox Created`,
+    //   content: utils.X(renderedCreated),
+    //   author: 'Kill the Newsletter!',
+    // });
+
+    // create file with feed id with intro entry
     await writeFileAtomic(
       utils.feedFilePath(identifier),
       feed(

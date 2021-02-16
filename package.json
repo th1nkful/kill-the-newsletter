@@ -9,6 +9,7 @@
     "ds:emulator": "gcloud beta emulators datastore start"
   },
   "dependencies": {
+    "@google-cloud/datastore": "^6.3.1",
     "@types/express": "^4.17.3",
     "@types/jsdom": "^16.2.1",
     "@types/mailparser": "^2.7.2",
@@ -22,9 +23,11 @@
     "escape-string-regexp": "^4.0.0",
     "express": "^4.17.1",
     "express-async-handler": "^1.1.4",
+    "gstore-node": "^7.2.6",
     "jsdom": "^16.2.2",
     "mailparser": "^2.7.7",
     "pm2": "^4.2.3",
+    "rss": "^1.2.2",
     "sanitize-xml-string": "^1.1.0",
     "smtp-server": "^3.6.0",
     "tagged-template-noop": "^2.1.1",

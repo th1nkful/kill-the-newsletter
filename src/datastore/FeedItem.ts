@@ -1,0 +1,51 @@
+import { EntityKey, instances } from 'gstore-node';
+import createIdentifier from '../lib/createIdentifier';
+
+import { FeedModel } from './Feed';
+
+const gstore = instances.get('gstore');
+const { Schema } = gstore;
+
+interface FeedItemModel {
+  feedId: string;
+  feedItemId?: string;
+  title: string;
+  description?: string;
+  url: string;
+  guid: string;
+  author?: string;
+  date?: Date;
+  createdOn?: Date;
+  modifiedOn?: Date;
+  feed?: FeedModel | EntityKey;
+}
+
+const FeedItem = new Schema<FeedItemModel>({
+  feedId: { type: String, required: true },
+  feedItemId: {
+    type: String,
+    required: true,
+    default: () => createIdentifier(),
+  },
+  title: { type: String, required: true },
+  description: { type: String },
+  url: { type: String, required: true },
+  guid: { type: String, required: true },
+  author: { type: String },
+  date: { type: Date },
+  createdOn: {
+    type: Date,
+    default: gstore.defaultValues.NOW,
+    write: false,
+    read: false,
+  },
+  modifiedOn: {
+    type: Date,
+  },
+  feed: {
+    type: Schema.Types.Key,
+    ref: 'Feed',
+  },
+});
+
+export default gstore.model('FeedItem', FeedItem);
