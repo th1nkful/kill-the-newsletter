@@ -5,7 +5,8 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "test": "jest --coverage",
     "deploy": "pm2 deploy package.json production",
-    "deploy:setup": "pm2 deploy package.json production setup"
+    "deploy:setup": "pm2 deploy package.json production setup",
+    "ds:emulator": "gcloud beta emulators datastore start"
   },
   "dependencies": {
     "@types/express": "^4.17.3",
