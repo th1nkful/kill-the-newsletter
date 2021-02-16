@@ -36,16 +36,24 @@ app.use(express.static('static'));
 app.use(express.urlencoded({ extended: true }));
 
 // Get main page to create new feed
+// ! replace with react app
 app.get('/',
   (req, res) => res.send(layout(newInbox())));
+
+// ! add an app.get('/:feedId') which returns a rss feed (not xml)
+// ! which is generated on request from datastore
 
 // Create new feeds
 app.post('/',
   asyncHandler(async (req, res) => {
     const { name } = req.body;
+
     const identifier = createIdentifier();
     const renderedCreated = created(identifier);
 
+    // create file with feed id with intro entry
+    // ! create feed in datastore
+    // ! add initial entry
     await writeFileAtomic(
       utils.feedFilePath(identifier),
       feed(
@@ -61,6 +69,7 @@ app.post('/',
       ),
     );
 
+    // ! send inbox created page
     res.send(
       layout(html`
         <p><strong>“${utils.H(name)}” Inbox Created</strong></p>
@@ -72,32 +81,35 @@ app.post('/',
 app.get('/alternate/:feedIdentifier/:entryIdentifier',
   asyncHandler(async (req, res) => {
     const { feedIdentifier, entryIdentifier } = req.params;
-    const path = utils.feedFilePath(feedIdentifier);
 
+    // try open file with feed
+    // ! find feed in datastore
     let text;
     try {
+      const path = utils.feedFilePath(feedIdentifier);
       text = await fs.readFile(path, 'utf8');
     } catch {
       res.sendStatus(404);
       return;
     }
 
+    // parse xml feed
     const rssFeed = new JSDOM(text, { contentType: 'text/xml' });
     const { document } = rssFeed.window;
-    const link = document.querySelector(
-      `link[href="${utils.alternateURL(feedIdentifier, entryIdentifier)}"]`,
-    );
 
-    if (link === null) {
+    // try find specific entry
+    // ! find element for feed in datastore
+    const href = utils.alternateURL(feedIdentifier, entryIdentifier);
+    const linkElement = document.querySelector(`link[href="${href}"]`);
+    if (linkElement === null) {
       res.sendStatus(404);
       return;
     }
 
-    res.send(
-      entities.decodeXML(
-        link.parentElement!.querySelector('content')!.textContent!,
-      ),
-    );
+    // send specific entry
+    // ! redirect to public html
+    res.send(entities
+      .decodeXML(linkElement.parentElement!.querySelector('content')!.textContent!));
   }));
 
 export default app;
