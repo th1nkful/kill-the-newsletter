@@ -29,8 +29,7 @@ const uploadFile = async (
   });
 
   stream
-    .on('finish', async () => {
-      await file.makePublic();
+    .on('finish', () => {
       resolve(getPublicUrl(fileName));
     })
     .on('error', () => {
