@@ -1,6 +1,7 @@
 import 'dotenv/config';
 
 const {
+  PORT,
   WEB_PORT,
   EMAIL_PORT,
   BASE_URL = 'http://localhost:8000',
@@ -18,8 +19,9 @@ const config = {
   publicBucket: PUBLIC_GCP_BUCKET,
 };
 
-if (WEB_PORT) {
-  config.webPort = parseInt(WEB_PORT, 10);
+const port: string|undefined = WEB_PORT || PORT;
+if (port) {
+  config.webPort = parseInt(port, 10);
 }
 
 if (EMAIL_PORT) {
