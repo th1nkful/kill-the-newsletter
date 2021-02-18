@@ -6,7 +6,7 @@ import gstore from './gstore';
 
 const { Schema } = gstore;
 
-interface FeedItemModel {
+export interface FeedItemModel {
   feedId: string;
   feedItemId?: string;
   title: string;
