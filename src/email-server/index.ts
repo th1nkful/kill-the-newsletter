@@ -7,6 +7,13 @@ import processIncomingEmail from './processIncomingEmail';
 
 const emailServer = new SMTPServer({
   disabledCommands: ['AUTH', 'STARTTLS'],
+  // onRcptTo: async (
+  //   address,
+  //   session,
+  //   callback,
+  // ) => {
+  //   callback();
+  // },
   onData: async (
     stream: SMTPServerDataStream,
     session: SMTPServerSession,
