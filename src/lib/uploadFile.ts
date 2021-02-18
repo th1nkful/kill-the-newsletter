@@ -32,7 +32,8 @@ const uploadFile = async (
     .on('finish', () => {
       resolve(getPublicUrl(fileName));
     })
-    .on('error', () => {
+    .on('error', (err) => {
+      console.log(err);
       reject(new Error('Unable to upload file, something went wrong'));
     })
     .end(Buffer.from(content));

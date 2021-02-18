@@ -8,7 +8,7 @@
     "develop": "nodemon --ext ts --exec 'ts-node ./src'",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "test": "jest --coverage",
-    "deploy:appengine": "gcloud app deploy app.yaml",
+    "gae:deploy": "gcloud app deploy app.yaml",
     "ds:emulator": "gcloud beta emulators datastore start"
   },
   "dependencies": {
