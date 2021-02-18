@@ -1,12 +1,13 @@
+import html from 'tagged-template-noop';
 import config from '../../config';
 
 const {
-  issueReport: ISSUE_REPORT,
-  baseUrl: BASE_URL,
+  issueReport,
+  baseUrl,
 } = config;
 
-const layout = (content: string): string => {
-  const html = `<!DOCTYPE html>
+const layout = (mainContent: string): string => {
+  const content = html`<!DOCTYPE html>
   <html lang="en">
     <head>
       <meta charset="UTF-8" />
@@ -21,44 +22,44 @@ const layout = (content: string): string => {
         rel="icon"
         type="image/png"
         sizes="32x32"
-        href="${BASE_URL}/favicon-32x32.png"
+        href="${baseUrl}/favicon-32x32.png"
       />
       <link
         rel="icon"
         type="image/png"
         sizes="16x16"
-        href="${BASE_URL}/favicon-16x16.png"
+        href="${baseUrl}/favicon-16x16.png"
       />
-      <link rel="icon" type="image/x-icon" href="${BASE_URL}/favicon.ico" />
-      <link rel="stylesheet" type="text/css" href="${BASE_URL}/styles.css" />
+      <link rel="icon" type="image/x-icon" href="${baseUrl}/favicon.ico" />
+      <link rel="stylesheet" type="text/css" href="${baseUrl}/styles.css" />
     </head>
     <body>
       <header>
-        <h1><a href="${BASE_URL}/">Kill the Newsletter!</a></h1>
+        <h1><a href="${baseUrl}/">Kill the Newsletter!</a></h1>
         <p>Convert email newsletters into Atom feeds</p>
         <p>
           <img
-            src="${BASE_URL}/logo.svg"
+            src="${baseUrl}/logo.svg"
             alt="Convert email newsletters into Atom feeds"
           />
         </p>
       </header>
-      <main>${content}</main>
+      <main>${mainContent}</main>
       <footer>
         <p>
           By <a href="https://leafac.com">Leandro Facchinetti</a> ·
           <a href="https://github.com/leafac/kill-the-newsletter.com"
             >Source</a
           >
-          · <a href="${ISSUE_REPORT}">Report an Issue</a>
+          · <a href="${issueReport}">Report an Issue</a>
         </p>
       </footer>
-      <script src="${BASE_URL}/clipboard.min.js"></script>
-      <script src="${BASE_URL}/scripts.js"></script>
+      <script src="${baseUrl}/clipboard.min.js"></script>
+      <script src="${baseUrl}/scripts.js"></script>
     </body>
   </html>`;
 
-  return html.trim();
+  return content.trim();
 };
 
 export default layout;

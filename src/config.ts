@@ -3,17 +3,19 @@ import 'dotenv/config';
 const {
   WEB_PORT,
   EMAIL_PORT,
-  BASE_URL,
-  EMAIL_DOMAIN,
-  ISSUE_REPORT,
+  BASE_URL = 'http://localhost:8000',
+  EMAIL_DOMAIN = 'localhost',
+  ISSUE_REPORT = 'mailto:kill-the-newsletter@leafac.com',
+  PUBLIC_GCP_BUCKET = 'rss-from-email-dev-public',
 } = process.env;
 
 const config = {
   webPort: 8000,
   emailPort: 2525,
-  baseUrl: BASE_URL || 'http://localhost:8000',
-  emailDomain: EMAIL_DOMAIN || 'localhost',
-  issueReport: ISSUE_REPORT || 'mailto:kill-the-newsletter@leafac.com',
+  baseUrl: BASE_URL,
+  emailDomain: EMAIL_DOMAIN,
+  issueReport: ISSUE_REPORT,
+  publicBucket: PUBLIC_GCP_BUCKET,
 };
 
 if (WEB_PORT) {

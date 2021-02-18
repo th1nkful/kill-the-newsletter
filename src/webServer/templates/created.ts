@@ -1,19 +1,16 @@
+import html from 'tagged-template-noop';
 import config from '../../config';
-import { feedEmail, feedURL } from '../utils';
+import { FeedModel } from '../../datastore/Feed';
 
-const {
-  baseUrl: BASE_URL,
-} = config;
-
-const created = (identifier: string): string => `
+const created = (feed: FeedModel): string => html`
     <p>
       Sign up for the newsletter with<br /><code class="copyable"
-        >${feedEmail(identifier)}</code
+        >${feed.feedEmail}</code
       >
     </p>
     <p>
       Subscribe to the Atom feed at<br /><code class="copyable"
-        >${feedURL(identifier)}</code
+        >${feed.feed_url}</code
       >
     </p>
     <p>
@@ -23,7 +20,7 @@ const created = (identifier: string): string => `
     </p>
     <p>Enjoy your readings!</p>
     <p>
-      <a href="${BASE_URL}"><strong>Create Another Inbox</strong></a>
+      <a href="${config.baseUrl}"><strong>Create Another Inbox</strong></a>
     </p>
   `.trim();
 

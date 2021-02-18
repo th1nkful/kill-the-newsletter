@@ -8,6 +8,7 @@ export interface FeedModel {
   userId?: string;
   title: string;
   description?: string;
+  feedEmail: string;
   feed_url: string;
   site_url: string;
   image_url?: string;
@@ -21,6 +22,7 @@ const Feed = new Schema<FeedModel>({
   userId: { type: String },
   title: { type: String, required: true },
   description: { type: String },
+  feedEmail: { type: String, required: true },
   feed_url: { type: String, required: true },
   site_url: { type: String, required: true },
   image_url: { type: String },

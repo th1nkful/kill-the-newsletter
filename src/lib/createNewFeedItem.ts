@@ -1,5 +1,9 @@
+import { v4 as uuid } from 'uuid';
+
 import Feed from '../datastore/Feed';
 import FeedItem from '../datastore/FeedItem';
+import uploadFile from './uploadFile';
+import sanitiseHtml from './sanitiseHtml';
 
 interface FeedItemData {
   title: string;
@@ -12,9 +16,28 @@ const createNewFeedItem = async (
   data: FeedItemData,
 ) => {
   const feed = await Feed.findOne({ feedId });
-  const publicUrl = 'upload(data.content)';
+  if (!feed) {
+    throw new Error('No feed for feedId');
+  }
+
+  const feedItemId = uuid().toLowerCase();
+  const content = sanitiseHtml(data.content);
+
+  // ! add to pretty template
+  // ? pretty html around email
+  // TODO: remove tracking pixels
+
+  // ? - image = findPrimaryImage(content)
+  // ? - description = summarise(content)
+
+  const publicUrl = await uploadFile(
+    feed.feedId,
+    feedItemId,
+    content,
+  );
 
   const feedItem = new FeedItem({
+    feedItemId,
     feedId,
     title: data.title,
     url: publicUrl,
@@ -23,6 +46,9 @@ const createNewFeedItem = async (
     date: new Date(),
     feed: feed?.entityKey,
   });
+
+  feed.pubDate = new Date();
+  feed.save();
 
   return feedItem.save();
 };

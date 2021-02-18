@@ -1,5 +1,5 @@
+import { v4 as uuid } from 'uuid';
 import { EntityKey, instances } from 'gstore-node';
-import createIdentifier from '../lib/createIdentifier';
 
 import { FeedModel } from './Feed';
 
@@ -25,7 +25,7 @@ const FeedItem = new Schema<FeedItemModel>({
   feedItemId: {
     type: String,
     required: true,
-    default: () => createIdentifier(),
+    default: () => uuid().toLowerCase(),
   },
   title: { type: String, required: true },
   description: { type: String },

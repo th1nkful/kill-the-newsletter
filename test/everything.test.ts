@@ -12,7 +12,7 @@ const {
   emailDomain: EMAIL_DOMAIN,
 } = config;
 
-test("create feed", async () => {
+test.skip("create feed", async () => {
   const identifier = await createFeed();
   const feed = await getFeed(identifier);
   const entry = feed.querySelector("feed > entry:first-of-type")!;
@@ -28,7 +28,7 @@ test("create feed", async () => {
   );
 });
 
-describe("receive email", () => {
+describe.skip("receive email", () => {
   test("‘updated’ field is updated", async () => {
     const identifier = await createFeed();
     const before = await getFeed(identifier);
@@ -229,7 +229,7 @@ describe("receive email", () => {
   });
 });
 
-test("‘noindex’ header", async () => {
+test.skip("‘noindex’ header", async () => {
   const identifier = await createFeed();
   const feed = await getFeed(identifier);
   const entry = feed.querySelector("feed > entry:first-of-type")!;
