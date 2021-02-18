@@ -1,9 +1,9 @@
 import { v4 as uuid } from 'uuid';
-import { EntityKey, instances } from 'gstore-node';
+import { EntityKey } from 'gstore-node';
 
 import { FeedModel } from './Feed';
+import gstore from './gstore';
 
-const gstore = instances.get('default');
 const { Schema } = gstore;
 
 interface FeedItemModel {

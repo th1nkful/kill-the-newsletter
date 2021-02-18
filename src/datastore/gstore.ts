@@ -1,16 +1,13 @@
 import 'dotenv/config';
-import { Gstore, instances } from 'gstore-node';
+import { Gstore } from 'gstore-node';
 import { Datastore } from '@google-cloud/datastore';
 
-const setupGstore = () => {
-  const gstore = new Gstore();
+const gstore = new Gstore();
 
-  const datastore = new Datastore({
-    projectId: process.env.GCP_PROJECT,
-  });
+const datastore = new Datastore({
+  projectId: process.env.GCP_PROJECT,
+});
 
-  gstore.connect(datastore);
-  instances.set('default', gstore);
-};
+gstore.connect(datastore);
 
-export default setupGstore;
+export default gstore;

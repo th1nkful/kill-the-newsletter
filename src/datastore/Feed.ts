@@ -1,6 +1,5 @@
-import { instances } from 'gstore-node';
+import gstore from './gstore';
 
-const gstore = instances.get('default');
 const { Schema } = gstore;
 
 export interface FeedModel {

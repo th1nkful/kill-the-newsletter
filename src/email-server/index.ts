@@ -3,7 +3,6 @@ import {
 } from 'smtp-server';
 
 import config from '../config';
-import setupGstore from '../datastore/gstore';
 import processIncomingEmail from './processIncomingEmail';
 
 const emailServer = new SMTPServer({
@@ -26,8 +25,6 @@ const emailServer = new SMTPServer({
 });
 
 export const startListening = async () => {
-  setupGstore();
-
   emailServer.listen(config.emailPort, () => {
     console.log(`SMTP server listening on port: ${config.emailPort}`);
   });
