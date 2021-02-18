@@ -19,6 +19,7 @@ const emailServer = new SMTPServer({
     session: SMTPServerSession,
     callback: (error?: Error | null | undefined) => void,
   ) => {
+    console.log('Processing incoming message...');
     try {
       await processIncomingEmail(stream, session);
       callback();

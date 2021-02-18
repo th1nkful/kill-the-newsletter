@@ -30,6 +30,7 @@ app.get('/',
 app.post('/',
   asyncHandler(async (req, res) => {
     const feed = await createNewFeed(req.body);
+    console.log('feed created', feed.feedId);
     const content = created(feed);
 
     await createNewFeedItem(feed.feedId, {

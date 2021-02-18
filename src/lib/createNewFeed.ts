@@ -16,6 +16,14 @@ const createNewFeed = async (data: FeedData) => {
   const feedUrl = `${baseUrl}/feeds/${feedId}`;
   const feedEmail = `${feedId}@${emailDomain}`;
 
+  console.log({
+    feedId,
+    title: data.title,
+    feedEmail,
+    feed_url: feedUrl,
+    site_url: feedUrl,
+  });
+
   const feed = new Feed({
     feedId,
     title: data.title,
@@ -23,6 +31,8 @@ const createNewFeed = async (data: FeedData) => {
     feed_url: feedUrl,
     site_url: feedUrl,
   });
+
+  console.log('created feed obj, trying save...');
 
   return feed.save();
 };
