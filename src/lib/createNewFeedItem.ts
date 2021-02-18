@@ -48,9 +48,9 @@ const createNewFeedItem = async (
   });
 
   feed.pubDate = new Date();
-  feed.save();
+  feed.save(undefined, { method: 'update' });
 
-  return feedItem.save();
+  return feedItem.save(undefined, { method: 'insert' });
 };
 
 export default createNewFeedItem;

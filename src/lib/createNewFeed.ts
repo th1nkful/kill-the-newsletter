@@ -34,7 +34,7 @@ const createNewFeed = async (data: FeedData) => {
 
   console.log('created feed obj, trying save...');
 
-  return feed.save();
+  return feed.save(undefined, { method: 'insert' });
 };
 
 export default createNewFeed;
