@@ -10,7 +10,7 @@ const newInbox = (): string => html`
       <p>
         <input
           type="text"
-          name="name"
+          name="title"
           placeholder="Newsletter Name…"
           maxlength="500"
           size="30"
