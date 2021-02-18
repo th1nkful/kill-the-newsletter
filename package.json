@@ -1,6 +1,7 @@
 {
   "scripts": {
     "start": "ts-node ./src",
+    "start:smtp": "ts-node ./src/email-server/listen.ts",
     "develop": "nodemon --ext ts --exec 'ts-node ./src'",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "test": "jest --coverage",
