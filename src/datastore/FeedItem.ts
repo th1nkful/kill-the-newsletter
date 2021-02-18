@@ -3,7 +3,7 @@ import { EntityKey, instances } from 'gstore-node';
 
 import { FeedModel } from './Feed';
 
-const gstore = instances.get('gstore');
+const gstore = instances.get('default');
 const { Schema } = gstore;
 
 interface FeedItemModel {
