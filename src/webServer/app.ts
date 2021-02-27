@@ -27,6 +27,19 @@ app.use('/feeds', (req, res, next) => {
 app.get('/',
   (req, res) => res.send(layout(newInbox())));
 
+app.post('/webhooks', asyncHandler(async (req, res) => {
+  console.log('req ->', req);
+  console.log('req ^^^');
+
+  console.log(JSON.stringify(req.body, null, 2));
+  console.log('req.body ^^^');
+
+  console.log(JSON.stringify(req.headers, null, 2));
+  console.log('req.headers ^^^');
+
+  res.sendStatus(200);
+}));
+
 app.post('/',
   asyncHandler(async (req, res) => {
     const feed = await createNewFeed(req.body);
