@@ -44,7 +44,6 @@ const createNewFeedItem = async (
     guid: publicUrl,
     author: data.author,
     date: new Date(),
-    feed: feed?.entityKey,
   });
 
   feed.pubDate = new Date();

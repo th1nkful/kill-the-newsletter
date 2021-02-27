@@ -1,7 +1,4 @@
 import { v4 as uuid } from 'uuid';
-import { EntityKey } from 'gstore-node';
-
-import { FeedModel } from './Feed';
 import gstore from './gstore';
 
 const { Schema } = gstore;
@@ -17,7 +14,6 @@ export interface FeedItemModel {
   date?: Date;
   createdOn?: Date;
   modifiedOn?: Date;
-  feed?: FeedModel | EntityKey;
 }
 
 const FeedItem = new Schema<FeedItemModel>({
@@ -41,10 +37,6 @@ const FeedItem = new Schema<FeedItemModel>({
   },
   modifiedOn: {
     type: Date,
-  },
-  feed: {
-    type: Schema.Types.Key,
-    ref: 'Feed',
   },
 });
 
