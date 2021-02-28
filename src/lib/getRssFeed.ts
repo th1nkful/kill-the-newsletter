@@ -1,10 +1,4 @@
-import { Entity } from 'gstore-node/lib/entity';
-import { Feed, Item } from 'feed';
-
-import { FeedModel } from '../datastore/Feed';
-import FeedItem from '../datastore/FeedItem';
-
-const getRssFeed = async (feed: Entity<FeedModel>) => {
+const getRssFeed = async (feed) => {
   const rss = new Feed({
     title: feed.title,
     description: feed.description,

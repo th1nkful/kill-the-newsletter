@@ -1,16 +1,15 @@
 import html from 'tagged-template-noop';
 import config from '../../config';
-import { FeedModel } from '../../datastore/Feed';
 
-const created = (feed: FeedModel): string => html`
+const created = (feed: any): string => html`
     <p>
       Sign up for the newsletter with<br /><code class="copyable"
-        >${feed.feedEmail}</code
+        >${feed.email}</code
       >
     </p>
     <p>
       Subscribe to the Atom feed at<br /><code class="copyable"
-        >${feed.feed_url}</code
+        >${feed.url}</code
       >
     </p>
     <p>

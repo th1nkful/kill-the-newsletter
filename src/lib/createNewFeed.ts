@@ -1,5 +1,5 @@
 import config from '../config';
-import Feed from '../datastore/Feed';
+
 import createIdentifier from './createIdentifier';
 
 const {
@@ -24,17 +24,17 @@ const createNewFeed = async (data: FeedData) => {
     site_url: feedUrl,
   });
 
-  const feed = new Feed({
-    feedId,
-    title: data.title,
-    feedEmail,
-    feed_url: feedUrl,
-    site_url: feedUrl,
-  });
+  // const feed = new Feed({
+  //   feedId,
+  //   title: data.title,
+  //   feedEmail,
+  //   feed_url: feedUrl,
+  //   site_url: feedUrl,
+  // });
 
-  console.log('created feed obj, trying save...');
+  // console.log('created feed obj, trying save...');
 
-  return feed.save(undefined, { method: 'insert' });
+  // return feed.save(undefined, { method: 'insert' });
 };
 
 export default createNewFeed;

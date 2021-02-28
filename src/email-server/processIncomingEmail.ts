@@ -1,19 +1,14 @@
-import { SMTPServerDataStream, SMTPServerSession } from 'smtp-server';
-
 import { simpleParser } from 'mailparser';
 import escapeRegEx from 'escape-string-regexp';
 
 import config from '../config';
 
-import Feeds from '../datastore/Feed';
+import Feeds from '../models/Feeds';
 import createNewFeedItem from '../lib/createNewFeedItem';
 
 const emailDomain = escapeRegEx(config.emailDomain);
 
-const processIncomingEmail = async (
-  stream: SMTPServerDataStream,
-  session: SMTPServerSession,
-) => {
+const processIncomingEmail = async () => {
   const email = await simpleParser(stream);
   const content = (typeof email.html === 'string')
     ? email.html

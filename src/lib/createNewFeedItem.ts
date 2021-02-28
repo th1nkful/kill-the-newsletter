@@ -1,7 +1,5 @@
 import { v4 as uuid } from 'uuid';
 
-import Feed from '../datastore/Feed';
-import FeedItem from '../datastore/FeedItem';
 import uploadFile from './uploadFile';
 import sanitiseHtml from './sanitiseHtml';
 

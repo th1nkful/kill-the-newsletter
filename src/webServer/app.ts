@@ -11,8 +11,8 @@ import createNewFeed from '../lib/createNewFeed';
 import createNewFeedItem from '../lib/createNewFeedItem';
 import getRssFeed from '../lib/getRssFeed';
 
-import Feed from '../datastore/Feed';
-import FeedItem from '../datastore/FeedItem';
+// import Feed from '../models/Feeds';
+// import FeedItem from '../models/Items';
 
 const app = express();
 
@@ -42,67 +42,67 @@ app.post('/webhooks', asyncHandler(async (req, res) => {
 
 app.post('/',
   asyncHandler(async (req, res) => {
-    const feed = await createNewFeed(req.body);
-    console.log('feed created', feed.feedId);
-    const content = created(feed);
+    // const feed = await createNewFeed(req.body);
+    // console.log('feed created', feed.feedId);
+    // const content = created(feed);
 
-    await createNewFeedItem(feed.feedId, {
-      title: `“${sanitiseHtml(feed.title)}” Inbox Created`,
-      author: 'Kill the Newsletter!',
-      content,
-    });
+    // await createNewFeedItem(feed.feedId, {
+    //   title: `“${sanitiseHtml(feed.title)}” Inbox Created`,
+    //   author: 'Kill the Newsletter!',
+    //   content,
+    // });
 
-    // ! send inbox created page
-    res.send(
-      layout(html`
-        <p><strong>“${sanitiseHtml(feed.title)}” Inbox Created</strong></p>
-        ${content}
-      `),
-    );
+    // // ! send inbox created page
+    // res.send(
+    //   layout(html`
+    //     <p><strong>“${sanitiseHtml(feed.title)}” Inbox Created</strong></p>
+    //     ${content}
+    //   `),
+    // );
   }));
 
 app.get('/feeds/:feedId',
   asyncHandler(async (req, res) => {
-    const { feedId } = req.params;
-    const feed = await Feed.findOne({ feedId });
-    if (!feed) {
-      res.sendStatus(404);
-      return;
-    }
+    // const { feedId } = req.params;
+    // const feed = await Feed.findOne({ feedId });
+    // if (!feed) {
+    //   res.sendStatus(404);
+    //   return;
+    // }
 
-    const rssFeed = await getRssFeed(feed);
-    const { format = 'rss' } = req.query;
+    // const rssFeed = await getRssFeed(feed);
+    // const { format = 'rss' } = req.query;
 
-    if (format === 'atom') {
-      res.send(rssFeed.atom1());
-      return;
-    }
+    // if (format === 'atom') {
+    //   res.send(rssFeed.atom1());
+    //   return;
+    // }
 
-    if (format === 'json') {
-      res.json(rssFeed.json1());
-      return;
-    }
+    // if (format === 'json') {
+    //   res.json(rssFeed.json1());
+    //   return;
+    // }
 
-    res.send(rssFeed.rss2());
+    // res.send(rssFeed.rss2());
   }));
 
 app.get('/feeds/:feedId/item/:feedItemId',
   asyncHandler(async (req, res) => {
-    const { feedId, feedItemId } = req.params;
+    // const { feedId, feedItemId } = req.params;
 
-    const feed = await Feed.findOne({ feedId });
-    if (!feed) {
-      res.sendStatus(404);
-      return;
-    }
+    // const feed = await Feed.findOne({ feedId });
+    // if (!feed) {
+    //   res.sendStatus(404);
+    //   return;
+    // }
 
-    const item = await FeedItem.findOne({ feedId, feedItemId });
-    if (!item) {
-      res.sendStatus(404);
-      return;
-    }
+    // const item = await FeedItem.findOne({ feedId, feedItemId });
+    // if (!item) {
+    //   res.sendStatus(404);
+    //   return;
+    // }
 
-    res.redirect(301, item.url);
+    // res.redirect(301, item.url);
   }));
 
 export default app;

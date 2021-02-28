@@ -1,9 +1,9 @@
-runtime: nodejs12
+runtime: nodejs14
 
 env_variables:
-  PUBLIC_GCP_BUCKET: "rss-from-email-dev-public"
+  PUBLIC_GCP_BUCKET: "rss-for-email-dev-public"
   EMAIL_DOMAIN: "rss-for.email"
-  BASE_URL: "https://rss-from-email-dev.ts.r.appspot.com"
+  BASE_URL: "https://rss-for-email-dev.ts.r.appspot.com"
 
 handlers:
 - url: /static
